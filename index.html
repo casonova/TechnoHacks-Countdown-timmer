@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Countdown Timer</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f2f2f2;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            text-align: center;
+        }
+
+        #timer {
+            font-size: 3em;
+            color: #333;
+        }
+
+        .button-container {
+            margin-top: 20px;
+        }
+
+        button {
+            font-size: 1.2em;
+            padding: 10px 20px;
+            margin: 5px;
+            cursor: pointer;
+            background-color: #007BFF;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        input[type="time"] {
+            font-size: 1.2em;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="timer">00:00:00</div>
+        <div class="button-container">
+            <label for="startTime">Start Time:</label>
+            <input type="time" id="startTime" value="00:00">
+            <label for="stopTime">Stop Time:</label>
+            <input type="time" id="stopTime" value="00:00">
+            <button id="start">Start</button>
+            <button id="stop">Stop</button>
+            <button id="reset">Reset</button>
+        </div>
+    </div>
+
+    <script>
+        let timerInterval;
+        let startTime;
+        let stopTime;
+        let isRunning = false;
+
+        function startTimer() {
+            if (!isRunning) {
+                const startInput = document.getElementById("startTime").value.split(":");
+                const stopInput = document.getElementById("stopTime").value.split(":");
+                const startHours = parseInt(startInput[0]);
+                const startMinutes = parseInt(startInput[1]);
+                const stopHours = parseInt(stopInput[0]);
+                const stopMinutes = parseInt(stopInput[1]);
+
+                startTime = startHours * 3600 + startMinutes * 60;
+                stopTime = stopHours * 3600 + stopMinutes * 60;
+
+                if (stopTime <= startTime) {
+                    alert("Stop time must be after start time.");
+                    return;
+                }
+
+                isRunning = true;
+                timerInterval = setInterval(updateTimer, 1000);
+            }
+        }
+
+        function stopTimer() {
+            if (isRunning) {
+                clearInterval(timerInterval);
+                isRunning = false;
+            }
+        }
+
+        function resetTimer() {
+            stopTimer();
+            document.getElementById("timer").textContent = "00:00:00";
+        }
+
+        function updateTimer() {
+            if (isRunning) {
+                const remainingTimeInSeconds = stopTime - startTime;
+
+                if (remainingTimeInSeconds <= 0) {
+                    clearInterval(timerInterval);
+                    isRunning = false;
+                    document.getElementById("timer").textContent = "00:00:00";
+                } else {
+                    const hours = Math.floor(remainingTimeInSeconds / 3600);
+                    const minutes = Math.floor((remainingTimeInSeconds % 3600) / 60);
+                    const seconds = remainingTimeInSeconds % 60;
+    
+                    const formattedTime = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+                    document.getElementById("timer").textContent = formattedTime;
+                    startTime++;
+                }
+            }
+        }
+
+        document.getElementById("start").addEventListener("click", startTimer);
+        document.getElementById("stop").addEventListener("click", stopTimer);
+        document.getElementById("reset").addEventListener("click", resetTimer);
+    </script>
+</body>
+</html>
